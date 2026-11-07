@@ -1,0 +1,6 @@
+{
+  "name": "Cosmic Hub",
+  "description": "Customizable dark mode vaporwave galaxy themed family hub with live device sync, grocery lists, calendar appointments, and family admin controls.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,123 @@
+{
+  "entities": {
+    "Hub": {
+      "title": "Hub",
+      "description": "Represents the centralized family hub with settings and access lists.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Display name of the family hub" },
+        "ownerId": { "type": "string", "description": "UID of the creator/primary admin" },
+        "adminUids": { "type": "array", "description": "UIDs of authorized administrators" },
+        "memberUids": { "type": "array", "description": "UIDs of allowed members" },
+        "whitelistedEmails": { "type": "array", "description": "Emails pre-authorized to join this hub" },
+        "themePalette": { "type": "string", "description": "Vaporwave theme variant (e.g. Neon Magenta, Cyber Cyan, Sunset Purple)" },
+        "glowIntensity": { "type": "string", "description": "Glow intensity (High, Medium, Subtle)" },
+        "ambientStars": { "type": "boolean", "description": "Whether animated starfield galaxy is enabled" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp via serverTimestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp via serverTimestamp" }
+      },
+      "required": ["name", "ownerId", "adminUids", "memberUids", "whitelistedEmails", "createdAt", "updatedAt"]
+    },
+    "GroceryItem": {
+      "title": "GroceryItem",
+      "description": "A shared grocery or household shopping item synced in real time across family devices.",
+      "type": "object",
+      "properties": {
+        "hubId": { "type": "string", "description": "Parent hub identifier" },
+        "memberUids": { "type": "array", "description": "Denormalized UIDs of hub members for fast security evaluation" },
+        "title": { "type": "string", "description": "Name of grocery or supply item" },
+        "category": { "type": "string", "description": "Category: Produce, Bakery, Dairy, Pantry, Frozen, Household, etc." },
+        "quantity": { "type": "number", "description": "Numeric quantity" },
+        "unit": { "type": "string", "description": "Unit of measurement (pcs, lbs, bags, box)" },
+        "isCompleted": { "type": "boolean", "description": "Checked off status in grocery list" },
+        "addedBy": { "type": "string", "description": "Display name of creator" },
+        "addedByUid": { "type": "string", "description": "UID of user who added item" },
+        "assignedTo": { "type": "string", "description": "Family member assigned to buy" },
+        "notes": { "type": "string", "description": "Special brand or coupon notes" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp via serverTimestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp via serverTimestamp" }
+      },
+      "required": ["hubId", "memberUids", "title", "category", "quantity", "isCompleted", "addedByUid", "createdAt", "updatedAt"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "A family appointment or calendar event with Google Calendar sync integration.",
+      "type": "object",
+      "properties": {
+        "hubId": { "type": "string", "description": "Parent hub identifier" },
+        "memberUids": { "type": "array", "description": "Denormalized UIDs of hub members for security evaluation" },
+        "title": { "type": "string", "description": "Title of appointment" },
+        "description": { "type": "string", "description": "Details or notes" },
+        "location": { "type": "string", "description": "Location or clinic address" },
+        "startTime": { "type": "string", "format": "date-time", "description": "Event start time" },
+        "endTime": { "type": "string", "format": "date-time", "description": "Event end time" },
+        "category": { "type": "string", "description": "Doctor, School, Sports, Social, Family, Work" },
+        "colorTag": { "type": "string", "description": "Vaporwave neon accent color code" },
+        "googleCalendarEventId": { "type": "string", "description": "Identifier in Google Calendar if synced" },
+        "syncedWithGoogle": { "type": "boolean", "description": "Flag indicating Google Calendar sync status" },
+        "reminderMinutes": { "type": "number", "description": "Reminder lead time in minutes for local notifications" },
+        "createdBy": { "type": "string", "description": "Display name of creator" },
+        "createdByUid": { "type": "string", "description": "UID of creator" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp via serverTimestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp via serverTimestamp" }
+      },
+      "required": ["hubId", "memberUids", "title", "startTime", "endTime", "category", "createdByUid", "createdAt", "updatedAt"]
+    },
+    "Member": {
+      "title": "Member",
+      "description": "Represents an active synchronized family member device.",
+      "type": "object",
+      "properties": {
+        "hubId": { "type": "string", "description": "Parent hub identifier" },
+        "uid": { "type": "string", "description": "User UID" },
+        "email": { "type": "string", "description": "Google email" },
+        "displayName": { "type": "string", "description": "Display name" },
+        "role": { "type": "string", "description": "Role: admin or member" },
+        "avatarIcon": { "type": "string", "description": "Vapor galaxy avatar key (astronaut, planet, comet, star, nebula)" },
+        "deviceInfo": { "type": "string", "description": "Device model or phone label" },
+        "lastActive": { "type": "string", "format": "date-time", "description": "Last sync heartbeat" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Joined timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Updated timestamp" }
+      },
+      "required": ["hubId", "uid", "email", "displayName", "role", "createdAt", "updatedAt"]
+    },
+    "ActivityLog": {
+      "title": "ActivityLog",
+      "description": "Audit log item recording actions like adding groceries, checking off items, scheduling events, or whitelisting.",
+      "type": "object",
+      "properties": {
+        "hubId": { "type": "string", "description": "Parent hub identifier" },
+        "memberUids": { "type": "array", "description": "Member UIDs with access" },
+        "userName": { "type": "string", "description": "Name of member who performed action" },
+        "userEmail": { "type": "string", "description": "Email of actor" },
+        "actionType": { "type": "string", "description": "Action type: grocery_added, grocery_completed, appointment_added, etc." },
+        "itemTitle": { "type": "string", "description": "Title of grocery or event" },
+        "description": { "type": "string", "description": "Readable summary of activity" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp via serverTimestamp" }
+      },
+      "required": ["hubId", "memberUids", "userName", "actionType", "itemTitle", "description", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/hubs/{hubId}": {
+      "schema": "Hub",
+      "description": "Central family hub documents"
+    },
+    "/hubs/{hubId}/groceries/{groceryId}": {
+      "schema": "GroceryItem",
+      "description": "Real-time synchronized grocery shopping items"
+    },
+    "/hubs/{hubId}/appointments/{appointmentId}": {
+      "schema": "Appointment",
+      "description": "Family appointments and calendar schedule"
+    },
+    "/hubs/{hubId}/members/{memberUid}": {
+      "schema": "Member",
+      "description": "Live connected family members and device presence"
+    },
+    "/hubs/{hubId}/activity/{activityId}": {
+      "schema": "ActivityLog",
+      "description": "Live household activity and audit log"
+    }
+  }
+}

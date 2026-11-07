@@ -1,0 +1,193 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isHubMember(hubId) {
+      return isSignedIn() && exists(/databases/$(database)/documents/hubs/$(hubId)) && (
+        request.auth.uid == get(/databases/$(database)/documents/hubs/$(hubId)).data.ownerId ||
+        request.auth.uid in get(/databases/$(database)/documents/hubs/$(hubId)).data.memberUids
+      );
+    }
+
+    function isHubAdmin(hubId) {
+      return isSignedIn() && exists(/databases/$(database)/documents/hubs/$(hubId)) && (
+        request.auth.uid == get(/databases/$(database)/documents/hubs/$(hubId)).data.ownerId ||
+        request.auth.uid in get(/databases/$(database)/documents/hubs/$(hubId)).data.adminUids
+      );
+    }
+
+    function isValidHub(data) {
+      return data.keys().hasAll(['name', 'ownerId', 'adminUids', 'memberUids', 'whitelistedEmails', 'createdAt', 'updatedAt'])
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+        && data.ownerId is string && data.ownerId.size() > 0
+        && data.adminUids is list
+        && data.memberUids is list
+        && data.whitelistedEmails is list
+        && data.createdAt is timestamp && data.createdAt <= request.time
+        && data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidGroceryItem(data) {
+      return data.keys().hasAll(['hubId', 'memberUids', 'title', 'category', 'quantity', 'isCompleted', 'addedByUid', 'createdAt', 'updatedAt'])
+        && data.hubId is string && data.hubId.size() > 0
+        && data.memberUids is list
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 150
+        && data.category is string && data.category.size() > 0
+        && data.quantity is number && data.quantity >= 0
+        && data.isCompleted is bool
+        && data.addedByUid is string && data.addedByUid.size() > 0
+        && data.createdAt is timestamp && data.createdAt <= request.time
+        && data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidAppointment(data) {
+      return data.keys().hasAll(['hubId', 'memberUids', 'title', 'startTime', 'endTime', 'category', 'createdByUid', 'createdAt', 'updatedAt'])
+        && data.hubId is string && data.hubId.size() > 0
+        && data.memberUids is list
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 150
+        && data.startTime is timestamp
+        && data.endTime is timestamp
+        && data.category is string && data.category.size() > 0
+        && data.createdByUid is string && data.createdByUid.size() > 0
+        && data.createdAt is timestamp && data.createdAt <= request.time
+        && data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidMember(data) {
+      return data.keys().hasAll(['hubId', 'uid', 'email', 'displayName', 'role', 'createdAt', 'updatedAt'])
+        && data.hubId is string && data.hubId.size() > 0
+        && data.uid is string && data.uid.size() > 0
+        && data.email is string && data.email.size() > 0
+        && data.displayName is string && data.displayName.size() > 0
+        && data.role in ['admin', 'member']
+        && data.createdAt is timestamp && data.createdAt <= request.time
+        && data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidActivityLog(data) {
+      return data.keys().hasAll(['hubId', 'memberUids', 'userName', 'actionType', 'itemTitle', 'description', 'createdAt'])
+        && data.hubId is string && data.hubId.size() > 0
+        && data.memberUids is list
+        && data.userName is string && data.userName.size() > 0
+        && data.actionType is string && data.actionType.size() > 0
+        && data.itemTitle is string
+        && data.description is string
+        && data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    // Hub Collection
+    match /hubs/{hubId} {
+      allow read: if isSignedIn() && (
+        resource.data.ownerId == request.auth.uid ||
+        request.auth.uid in resource.data.memberUids ||
+        (request.auth.token.email != null && request.auth.token.email in resource.data.whitelistedEmails)
+      );
+
+      allow create: if isSignedIn() && isValidHub(incoming()) &&
+        incoming().ownerId == request.auth.uid &&
+        request.auth.uid in incoming().memberUids &&
+        request.auth.uid in incoming().adminUids;
+
+      allow update: if isSignedIn() && isValidHub(incoming()) &&
+        incoming().ownerId == existing().ownerId && (
+          request.auth.uid == existing().ownerId ||
+          request.auth.uid in existing().adminUids ||
+          (request.auth.uid in incoming().memberUids && (
+            request.auth.uid in existing().memberUids ||
+            (request.auth.token.email != null && request.auth.token.email in existing().whitelistedEmails)
+          ))
+        );
+
+      allow delete: if isSignedIn() && existing().ownerId == request.auth.uid;
+
+      // Grocery Subcollection
+      match /groceries/{groceryId} {
+        allow read: if isSignedIn() && (
+          request.auth.uid in resource.data.memberUids ||
+          isHubMember(hubId)
+        );
+
+        allow create: if isSignedIn() && isValidGroceryItem(incoming()) &&
+          incoming().hubId == hubId &&
+          incoming().addedByUid == request.auth.uid &&
+          (request.auth.uid in incoming().memberUids || isHubMember(hubId));
+
+        allow update: if isSignedIn() && isValidGroceryItem(incoming()) &&
+          incoming().hubId == hubId &&
+          (request.auth.uid in incoming().memberUids || isHubMember(hubId));
+
+        allow delete: if isSignedIn() && (
+          request.auth.uid in existing().memberUids ||
+          isHubMember(hubId)
+        );
+      }
+
+      // Appointment Subcollection
+      match /appointments/{appointmentId} {
+        allow read: if isSignedIn() && (
+          request.auth.uid in resource.data.memberUids ||
+          isHubMember(hubId)
+        );
+
+        allow create: if isSignedIn() && isValidAppointment(incoming()) &&
+          incoming().hubId == hubId &&
+          incoming().createdByUid == request.auth.uid &&
+          (request.auth.uid in incoming().memberUids || isHubMember(hubId));
+
+        allow update: if isSignedIn() && isValidAppointment(incoming()) &&
+          incoming().hubId == hubId &&
+          (request.auth.uid in incoming().memberUids || isHubMember(hubId));
+
+        allow delete: if isSignedIn() && (
+          request.auth.uid in existing().memberUids ||
+          isHubMember(hubId)
+        );
+      }
+
+      // Members Subcollection
+      match /members/{memberUid} {
+        allow read: if isSignedIn() && isHubMember(hubId);
+
+        allow create: if isSignedIn() && isValidMember(incoming()) &&
+          incoming().hubId == hubId &&
+          incoming().uid == request.auth.uid &&
+          memberUid == request.auth.uid;
+
+        allow update: if isSignedIn() && isValidMember(incoming()) &&
+          incoming().hubId == hubId &&
+          (request.auth.uid == memberUid || isHubAdmin(hubId));
+
+        allow delete: if isSignedIn() && (
+          request.auth.uid == memberUid ||
+          isHubAdmin(hubId)
+        );
+      }
+
+      // Activity Subcollection
+      match /activity/{activityId} {
+        allow read: if isSignedIn() && (
+          request.auth.uid in resource.data.memberUids ||
+          isHubMember(hubId)
+        );
+
+        allow create: if isSignedIn() && isValidActivityLog(incoming()) &&
+          incoming().hubId == hubId &&
+          (request.auth.uid in incoming().memberUids || isHubMember(hubId));
+
+        allow delete: if isSignedIn() && isHubAdmin(hubId);
+      }
+    }
+  }
+}
