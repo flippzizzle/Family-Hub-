@@ -10,6 +10,7 @@ import com.example.data.models.Appointment
 import com.example.data.models.CatalogGroceryItem
 import com.example.data.models.Chore
 import com.example.data.models.CustomThemeConfig
+import com.example.data.models.GroceryFavorite
 import com.example.data.models.GroceryItem
 import com.example.data.models.HouseholdNote
 import com.example.data.models.Hub
@@ -131,6 +132,18 @@ class HubViewModel(
     }.map { list -> list.sortedWith(compareBy({ it.isCompleted }, { it.category }, { it.title })) }
         .catch { e ->
             _errorBanner.value = "Failed to load groceries: ${e.localizedMessage}"
+            emit(emptyList())
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = emptyList()
+        )
+
+    // Household Grocery Favorites (Permanent shared collection)
+    val groceryFavorites: StateFlow<List<GroceryFavorite>> = _selectedHubId.flatMapLatest { hubId ->
+        if (hubId != null) repository.observeGroceryFavorites(hubId) else flowOf(emptyList())
+    }.map { list -> list.sortedWith(compareBy({ it.category }, { it.name })) }
+        .catch { e ->
             emit(emptyList())
         }.stateIn(
             scope = viewModelScope,
@@ -381,12 +394,39 @@ class HubViewModel(
 
     fun toggleGrocery(item: GroceryItem) {
         val hub = activeHub.value
+        val hubId = hub?.id ?: item.hubId
+        if (hubId.isBlank()) return
         val memberUids = hub?.memberUids ?: emptyList()
         viewModelScope.launch {
             try {
-                repository.toggleGroceryCompleted(item, memberUids)
+                repository.toggleGroceryCompleted(hubId, item, memberUids)
             } catch (e: Exception) {
                 _errorBanner.value = "Failed to update item: ${e.localizedMessage}"
+            }
+        }
+    }
+
+    fun restoreGrocery(item: GroceryItem) {
+        val hub = activeHub.value
+        val hubId = hub?.id ?: item.hubId
+        if (hubId.isBlank()) return
+        val memberUids = hub?.memberUids ?: emptyList()
+        viewModelScope.launch {
+            try {
+                repository.restoreGroceryItem(hubId, item, memberUids)
+            } catch (e: Exception) {
+                _errorBanner.value = "Failed to restore item: ${e.localizedMessage}"
+            }
+        }
+    }
+
+    fun clearGroceryHistory() {
+        val hub = activeHub.value ?: return
+        viewModelScope.launch {
+            try {
+                repository.clearCompletedGroceries(hub.id)
+            } catch (e: Exception) {
+                _errorBanner.value = "Failed to clear purchase history: ${e.localizedMessage}"
             }
         }
     }
@@ -398,6 +438,36 @@ class HubViewModel(
                 repository.deleteGroceryItem(hub.id, itemId)
             } catch (e: Exception) {
                 _errorBanner.value = "Failed to delete item: ${e.localizedMessage}"
+            }
+        }
+    }
+
+    fun isGroceryFavorite(name: String): Boolean {
+        val clean = name.trim().lowercase()
+        return groceryFavorites.value.any { it.name.trim().lowercase() == clean }
+    }
+
+    fun toggleGroceryFavorite(
+        name: String,
+        category: String,
+        preferredStore: String = "Kroger",
+        source: String = "catalog"
+    ) {
+        val hub = activeHub.value ?: return
+        val cleanName = name.trim()
+        if (cleanName.isBlank()) return
+
+        viewModelScope.launch {
+            try {
+                repository.toggleGroceryFavorite(
+                    hubId = hub.id,
+                    name = cleanName,
+                    category = category,
+                    preferredStore = preferredStore,
+                    source = source
+                )
+            } catch (e: Exception) {
+                _errorBanner.value = "Failed to update favorites: ${e.localizedMessage}"
             }
         }
     }

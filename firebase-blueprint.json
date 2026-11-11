@@ -166,6 +166,22 @@
         "updatedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["hubId", "memberUids", "title", "content", "authorName", "createdAt", "updatedAt"]
+    },
+    "GroceryFavorite": {
+      "title": "GroceryFavorite",
+      "description": "A permanent, shared household favorite grocery item persisted in Firestore across family devices.",
+      "type": "object",
+      "properties": {
+        "hubId": { "type": "string", "description": "Parent hub identifier" },
+        "name": { "type": "string", "description": "Item name" },
+        "category": { "type": "string", "description": "Grocery category" },
+        "preferredStore": { "type": "string", "description": "Preferred store (Kroger, Amazon, Other)" },
+        "source": { "type": "string", "description": "catalog, receipt, or manual" },
+        "favoritedByUid": { "type": "string", "description": "UID of family member who favorited" },
+        "favoritedByName": { "type": "string", "description": "Name of family member" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp via serverTimestamp" }
+      },
+      "required": ["hubId", "name", "category", "preferredStore", "createdAt"]
     }
   },
   "firestore": {
@@ -176,6 +192,10 @@
     "/hubs/{hubId}/groceries/{groceryId}": {
       "schema": "GroceryItem",
       "description": "Real-time synchronized grocery shopping items"
+    },
+    "/hubs/{hubId}/grocery_favorites/{favoriteId}": {
+      "schema": "GroceryFavorite",
+      "description": "Permanent shared household favorite grocery items"
     },
     "/hubs/{hubId}/appointments/{appointmentId}": {
       "schema": "Appointment",

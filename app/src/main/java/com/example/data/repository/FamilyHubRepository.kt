@@ -5,6 +5,7 @@ import com.example.R
 import com.example.data.OperationType
 import com.example.data.handleFirestoreError
 import com.example.data.models.Appointment
+import com.example.data.models.GroceryFavorite
 import com.example.data.models.GroceryItem
 import com.example.data.models.Hub
 import com.example.data.models.Member
@@ -431,8 +432,9 @@ class FamilyHubRepository(private val db: FirebaseFirestore) {
         }
     }
 
-    suspend fun toggleGroceryCompleted(item: GroceryItem, memberUids: List<String> = emptyList()) {
-        val docRef = db.collection("hubs").document(item.hubId).collection("groceries").document(item.id)
+    suspend fun toggleGroceryCompleted(hubId: String, item: GroceryItem, memberUids: List<String> = emptyList()) {
+        val targetHubId = item.hubId.ifBlank { hubId }
+        val docRef = db.collection("hubs").document(targetHubId).collection("groceries").document(item.id)
         val newStatus = !item.isCompleted
         try {
             docRef.update(
@@ -441,7 +443,7 @@ class FamilyHubRepository(private val db: FirebaseFirestore) {
             ).await()
 
             recordActivity(
-                hubId = item.hubId,
+                hubId = targetHubId,
                 memberUids = if (memberUids.isNotEmpty()) memberUids else item.memberUids,
                 actionType = if (newStatus) "grocery_completed" else "grocery_reopened",
                 itemTitle = item.title,
@@ -455,8 +457,123 @@ class FamilyHubRepository(private val db: FirebaseFirestore) {
         }
     }
 
+    suspend fun restoreGroceryItem(hubId: String, item: GroceryItem, memberUids: List<String> = emptyList()) {
+        val targetHubId = item.hubId.ifBlank { hubId }
+        val docRef = db.collection("hubs").document(targetHubId).collection("groceries").document(item.id)
+        try {
+            docRef.update(
+                "isCompleted", false,
+                "updatedAt", FieldValue.serverTimestamp()
+            ).await()
+
+            recordActivity(
+                hubId = targetHubId,
+                memberUids = if (memberUids.isNotEmpty()) memberUids else item.memberUids,
+                actionType = "grocery_reopened",
+                itemTitle = item.title,
+                description = "Restored '${item.title}' to active shopping list"
+            )
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            handleFirestoreError(e, OperationType.UPDATE, docRef.path)
+            throw e
+        }
+    }
+
+    suspend fun clearCompletedGroceries(hubId: String) {
+        val groceriesRef = db.collection("hubs").document(hubId).collection("groceries")
+        try {
+            val snapshot = groceriesRef.whereEqualTo("isCompleted", true).get().await()
+            val batch = db.batch()
+            for (doc in snapshot.documents) {
+                batch.delete(doc.reference)
+            }
+            batch.commit().await()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            handleFirestoreError(e, OperationType.DELETE, groceriesRef.path)
+            throw e
+        }
+    }
+
     suspend fun deleteGroceryItem(hubId: String, itemId: String) {
         val docRef = db.collection("hubs").document(hubId).collection("groceries").document(itemId)
+        try {
+            docRef.delete().await()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            handleFirestoreError(e, OperationType.DELETE, docRef.path)
+            throw e
+        }
+    }
+
+    // --- Grocery Favorites (Permanent Household Collection) ---
+
+    fun observeGroceryFavorites(hubId: String): Flow<List<GroceryFavorite>> = flow {
+        val uid = requireUserId()
+        val path = "hubs/$hubId/grocery_favorites"
+        emitAll(
+            db.collection("hubs").document(hubId).collection("grocery_favorites")
+                .snapshots()
+                .map { snapshot -> snapshot.toObjects(GroceryFavorite::class.java) }
+                .catch { error ->
+                    val firestoreError = generateSequence(error) { it.cause }
+                        .filterIsInstance<FirebaseFirestoreException>()
+                        .firstOrNull()
+                    if (firestoreError == null && error is CancellationException) throw error
+                    val exceptionToLog = firestoreError ?: (error as? Exception)
+                    if (exceptionToLog != null && auth.currentUser?.uid == uid) {
+                        handleFirestoreError(exceptionToLog, OperationType.LIST, path)
+                    }
+                    throw error
+                }
+        )
+    }
+
+    suspend fun toggleGroceryFavorite(
+        hubId: String,
+        name: String,
+        category: String,
+        preferredStore: String = "Kroger",
+        source: String = "catalog"
+    ): Boolean {
+        val uid = requireUserId()
+        val cleanName = name.trim()
+        val docId = cleanName.lowercase().replace(Regex("[^a-z0-9]"), "_").take(60)
+        val docRef = db.collection("hubs").document(hubId).collection("grocery_favorites").document(docId)
+
+        try {
+            val existing = docRef.get().await()
+            return if (existing.exists()) {
+                docRef.delete().await()
+                false // now unfavorited
+            } else {
+                val payload = mapOf(
+                    "hubId" to hubId,
+                    "name" to cleanName,
+                    "category" to category,
+                    "preferredStore" to preferredStore,
+                    "source" to source,
+                    "favoritedByUid" to uid,
+                    "favoritedByName" to (auth.currentUser?.displayName ?: "Family"),
+                    "createdAt" to FieldValue.serverTimestamp()
+                )
+                docRef.set(payload).await()
+                true // now favorited
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            handleFirestoreError(e, OperationType.CREATE, docRef.path)
+            throw e
+        }
+    }
+
+    suspend fun removeGroceryFavorite(hubId: String, favoriteId: String) {
+        val docRef = db.collection("hubs").document(hubId).collection("grocery_favorites").document(favoriteId)
         try {
             docRef.delete().await()
         } catch (e: CancellationException) {

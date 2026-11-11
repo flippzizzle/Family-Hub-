@@ -42,6 +42,19 @@ data class GroceryItem(
 )
 
 @IgnoreExtraProperties
+data class GroceryFavorite(
+    @DocumentId val id: String = "",
+    val hubId: String = "",
+    val name: String = "",
+    val category: String = "Produce",
+    val preferredStore: String = "Kroger",
+    val source: String = "catalog", // catalog, receipt, manual
+    val favoritedByUid: String = "",
+    val favoritedByName: String = "",
+    @ServerTimestamp val createdAt: Timestamp? = null
+)
+
+@IgnoreExtraProperties
 data class Appointment(
     @DocumentId val id: String = "",
     val hubId: String = "",

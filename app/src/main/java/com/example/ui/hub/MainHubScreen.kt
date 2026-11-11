@@ -95,6 +95,7 @@ fun MainHubScreen(
     val customThemeConfig by viewModel.customThemeConfig.collectAsState()
 
     val groceries by viewModel.groceries.collectAsState()
+    val groceryFavorites by viewModel.groceryFavorites.collectAsState()
     val groceryCatalog = viewModel.groceryCatalog
     val appointments by viewModel.appointments.collectAsState()
     val members by viewModel.members.collectAsState()
@@ -220,17 +221,25 @@ fun MainHubScreen(
                                             onLaunchDisplayMode = { viewModel.setDisplayModeActive(true) }
                                         )
 
-                                        // 1: Upgraded Grocery Catalog (318 Items & 158 Receipts)
+                                        // 1: Upgraded Grocery Catalog (318 Items, Favorites, Receipts & Export)
                                         1 -> GrocerySection(
                                             groceries = groceries,
                                             catalog = groceryCatalog,
+                                            favorites = groceryFavorites,
                                             members = members,
                                             onToggleGrocery = { viewModel.toggleGrocery(it) },
+                                            onRestoreGrocery = { viewModel.restoreGrocery(it) },
                                             onDeleteGrocery = { viewModel.deleteGrocery(it) },
+                                            onClearHistory = { viewModel.clearGroceryHistory() },
+                                            onToggleFavorite = { name, cat, store, src ->
+                                                viewModel.toggleGroceryFavorite(name, cat, store, src)
+                                            },
                                             onAddGrocery = { title, cat, qty, unit, assigned, notes, store, src, isHist ->
                                                 viewModel.addGrocery(title, cat, qty, unit, assigned, notes, store, src, isHist)
                                             },
-                                            isDuplicateCheck = { viewModel.isGroceryDuplicate(it) }
+                                            isDuplicateCheck = { viewModel.isGroceryDuplicate(it) },
+                                            isFavorite = { viewModel.isGroceryFavorite(it) },
+                                            hubName = activeHub!!.name
                                         )
 
                                         // 2: Genuine Two-Way Google Calendar Sync

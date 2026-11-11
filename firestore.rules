@@ -40,16 +40,12 @@ service cloud.firestore {
     }
 
     function isValidGroceryItem(data) {
-      return data.keys().hasAll(['hubId', 'memberUids', 'title', 'category', 'quantity', 'isCompleted', 'addedByUid', 'createdAt', 'updatedAt'])
-        && data.hubId is string && data.hubId.size() > 0
-        && data.memberUids is list
+      return data.keys().hasAll(['title', 'isCompleted'])
         && data.title is string && data.title.size() > 0 && data.title.size() <= 150
-        && data.category is string && data.category.size() > 0
-        && data.quantity is number && data.quantity >= 0
         && data.isCompleted is bool
-        && data.addedByUid is string && data.addedByUid.size() > 0
-        && data.createdAt is timestamp && data.createdAt <= request.time
-        && data.updatedAt is timestamp && data.updatedAt <= request.time;
+        && (!('quantity' in data) || (data.quantity is number && data.quantity >= 0))
+        && (!('category' in data) || (data.category is string))
+        && (!('hubId' in data) || (data.hubId is string && data.hubId.size() > 0));
     }
 
     function isValidAppointment(data) {
@@ -157,23 +153,32 @@ service cloud.firestore {
       // Grocery Subcollection
       match /groceries/{groceryId} {
         allow read: if isSignedIn() && (
-          request.auth.uid in resource.data.memberUids ||
-          isHubMember(hubId)
+          isHubMember(hubId) ||
+          request.auth.uid in resource.data.memberUids
         );
 
         allow create: if isSignedIn() && isValidGroceryItem(incoming()) &&
-          incoming().hubId == hubId &&
-          incoming().addedByUid == request.auth.uid &&
-          (request.auth.uid in incoming().memberUids || isHubMember(hubId));
+          (isHubMember(hubId) || request.auth.uid in incoming().memberUids);
 
         allow update: if isSignedIn() && isValidGroceryItem(incoming()) &&
-          incoming().hubId == hubId &&
-          (request.auth.uid in incoming().memberUids || isHubMember(hubId));
+          (isHubMember(hubId) || request.auth.uid in resource.data.memberUids || request.auth.uid in incoming().memberUids);
 
         allow delete: if isSignedIn() && (
-          request.auth.uid in existing().memberUids ||
-          isHubMember(hubId)
+          isHubMember(hubId) ||
+          request.auth.uid in resource.data.memberUids
         );
+      }
+
+      // Shared Household Grocery Favorites Subcollection
+      match /grocery_favorites/{favoriteId} {
+        allow read: if isSignedIn() && isHubMember(hubId);
+
+        allow create: if isSignedIn() && isHubMember(hubId) &&
+          incoming().name is string && incoming().name.size() > 0 && incoming().name.size() <= 150;
+
+        allow update: if isSignedIn() && isHubMember(hubId);
+
+        allow delete: if isSignedIn() && isHubMember(hubId);
       }
 
       // Appointment Subcollection

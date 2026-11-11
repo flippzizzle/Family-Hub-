@@ -1,5 +1,6 @@
 package com.example.ui.groceries
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,14 +25,20 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.RadioButtonUnchecked
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -64,6 +71,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -71,10 +79,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.models.CatalogGroceryItem
+import com.example.data.models.GroceryFavorite
 import com.example.data.models.GroceryItem
 import com.example.data.models.Member
 import com.example.ui.components.NeonGlowCard
 import com.example.ui.components.VaporwaveHeaderBadge
+import com.example.util.GroceryExportUtil
 
 val DefaultGroceryCategories = listOf(
     "All", "Produce", "Dairy & Eggs", "Meat & Protein", "Frozen & Quick Meals",
@@ -89,24 +99,44 @@ val StoreOptions = listOf("All Stores", "Kroger", "Amazon", "Other")
 fun GrocerySection(
     groceries: List<GroceryItem>,
     catalog: List<CatalogGroceryItem>,
+    favorites: List<GroceryFavorite>,
     members: List<Member>,
     onToggleGrocery: (GroceryItem) -> Unit,
+    onRestoreGrocery: (GroceryItem) -> Unit,
     onDeleteGrocery: (String) -> Unit,
+    onClearHistory: () -> Unit,
+    onToggleFavorite: (name: String, category: String, preferredStore: String, source: String) -> Unit,
     onAddGrocery: (title: String, category: String, quantity: Long, unit: String, assignedTo: String, notes: String, store: String, source: String, isHistorical: Boolean) -> Unit,
     isDuplicateCheck: (String) -> Boolean,
+    isFavorite: (String) -> Boolean,
+    hubName: String = "Cosmic Family Hub",
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    var activeSubView by remember { mutableIntStateOf(0) } // 0: Active Items, 1: Purchased / History
     var selectedStore by remember { mutableStateOf("All Stores") }
     var selectedCategory by remember { mutableStateOf("All") }
     var searchQuery by remember { mutableStateOf("") }
     var showAddDialog by remember { mutableStateOf(false) }
     var showCatalogSheet by remember { mutableStateOf(false) }
+    var showExportMenu by remember { mutableStateOf(false) }
+    var showClearHistoryConfirm by remember { mutableStateOf(false) }
     var pendingDuplicateItem by remember { mutableStateOf<CatalogGroceryItem?>(null) }
     var pendingDuplicateManualTitle by remember { mutableStateOf<String?>(null) }
 
-    // Filtered shopping list
-    val filteredGroceries = remember(groceries, selectedStore, selectedCategory, searchQuery) {
-        groceries.filter { item ->
+    // Separate active (unpurchased) vs completed (purchased history)
+    val activeGroceries = remember(groceries) { groceries.filter { !it.isCompleted } }
+    val completedGroceries = remember(groceries) { groceries.filter { it.isCompleted } }
+
+    val pendingCount = activeGroceries.size
+    val completedCount = completedGroceries.size
+
+    // Determine items for the current subview
+    val currentDisplayList = if (activeSubView == 0) activeGroceries else completedGroceries
+
+    // Filter items according to search, store, and category
+    val filteredGroceries = remember(currentDisplayList, selectedStore, selectedCategory, searchQuery) {
+        currentDisplayList.filter { item ->
             val matchStore = selectedStore == "All Stores" || item.store.equals(selectedStore, ignoreCase = true)
             val matchCat = selectedCategory == "All" || item.category.equals(selectedCategory, ignoreCase = true)
             val matchQuery = searchQuery.isBlank() || item.title.contains(searchQuery, ignoreCase = true)
@@ -114,16 +144,13 @@ fun GrocerySection(
         }
     }
 
-    val pendingCount = groceries.count { !it.isCompleted }
-    val completedCount = groceries.count { it.isCompleted }
-
     Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
         ) {
-            // Stats Row & Catalog Trigger
+            // Stats Row, SubView Switcher & Actions Header
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -131,34 +158,140 @@ fun GrocerySection(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Interactive Status Badges that toggle between Active and Purchased History
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    VaporwaveHeaderBadge(
-                        text = "$pendingCount NEEDED",
-                        glowColor = MaterialTheme.colorScheme.primary
-                    )
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { activeSubView = 0 }
+                    ) {
+                        VaporwaveHeaderBadge(
+                            text = "$pendingCount NEEDED",
+                            glowColor = if (activeSubView == 0) MaterialTheme.colorScheme.primary else Color.Gray
+                        )
+                    }
                     Spacer(modifier = Modifier.width(8.dp))
-                    VaporwaveHeaderBadge(
-                        text = "$completedCount BOUGHT",
-                        glowColor = MaterialTheme.colorScheme.secondary
-                    )
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { activeSubView = 1 }
+                    ) {
+                        VaporwaveHeaderBadge(
+                            text = "$completedCount PURCHASED",
+                            glowColor = if (activeSubView == 1) MaterialTheme.colorScheme.secondary else Color.Gray
+                        )
+                    }
                 }
 
-                Button(
-                    onClick = { showCatalogSheet = true },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.primary
-                    ),
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier.testTag("open_catalog_button")
+                // Action Controls: Export List & Catalog Sheet Trigger
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    // Export List Button with Dropdown (PNG or TXT)
+                    Box {
+                        OutlinedButton(
+                            onClick = { showExportMenu = true },
+                            shape = RoundedCornerShape(20.dp),
+                            modifier = Modifier.testTag("export_grocery_list_button")
+                        ) {
+                            Icon(Icons.Default.Share, contentDescription = "Export List", modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Export", style = MaterialTheme.typography.labelSmall)
+                        }
+
+                        DropdownMenu(
+                            expanded = showExportMenu,
+                            onDismissRequest = { showExportMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Save as PNG (Vaporwave Card)") },
+                                onClick = {
+                                    showExportMenu = false
+                                    try {
+                                        val file = GroceryExportUtil.exportShoppingListAsPng(
+                                            context = context,
+                                            activeItems = activeGroceries,
+                                            hubName = hubName
+                                        )
+                                        GroceryExportUtil.shareExportedFile(
+                                            context = context,
+                                            file = file,
+                                            mimeType = "image/png",
+                                            title = "Cosmic Hub Grocery List (PNG)"
+                                        )
+                                    } catch (e: Exception) {
+                                        Toast.makeText(context, "Export error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Save as TXT (Checklist File)") },
+                                onClick = {
+                                    showExportMenu = false
+                                    try {
+                                        val file = GroceryExportUtil.exportShoppingListAsTxt(
+                                            context = context,
+                                            activeItems = activeGroceries,
+                                            hubName = hubName
+                                        )
+                                        GroceryExportUtil.shareExportedFile(
+                                            context = context,
+                                            file = file,
+                                            mimeType = "text/plain",
+                                            title = "Cosmic Hub Grocery List (TXT)"
+                                        )
+                                    } catch (e: Exception) {
+                                        Toast.makeText(context, "Export error: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    // Open Catalog Sheet (318 Items, Favorites, Receipts)
+                    Button(
+                        onClick = { showCatalogSheet = true },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.primary
+                        ),
+                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier.testTag("open_catalog_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Catalog (318)", style = MaterialTheme.typography.labelSmall)
+                    }
+                }
+            }
+
+            // Purchased History Toolbar (Visible only in History subview)
+            if (activeSubView == 1) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
+                    Text(
+                        text = "Purchased Items History (${completedGroceries.size})",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontWeight = FontWeight.Bold
                     )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Catalog (318)", style = MaterialTheme.typography.labelMedium)
+                    if (completedGroceries.isNotEmpty()) {
+                        TextButton(
+                            onClick = { showClearHistoryConfirm = true },
+                            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                        ) {
+                            Icon(Icons.Default.DeleteSweep, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Clear History", style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
                 }
             }
 
@@ -166,7 +299,12 @@ fun GrocerySection(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                placeholder = { Text("Search your shopping list...", color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)) },
+                placeholder = {
+                    Text(
+                        if (activeSubView == 0) "Search active shopping list..." else "Search purchased history...",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    )
+                },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,
@@ -271,20 +409,28 @@ fun GrocerySection(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            imageVector = Icons.Default.ShoppingCart,
+                            imageVector = if (activeSubView == 0) Icons.Default.ShoppingCart else Icons.Default.History,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
                             modifier = Modifier.size(56.dp)
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = if (groceries.isEmpty()) "Your household shopping list is clear" else "No matching grocery items found",
+                            text = if (activeSubView == 0) {
+                                if (activeGroceries.isEmpty()) "Your active shopping list is clear" else "No matching active grocery items found"
+                            } else {
+                                if (completedGroceries.isEmpty()) "No purchase history recorded yet" else "No matching items in purchase history"
+                            },
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Tap 'Catalog (318)' to quick-add past purchases or '+' for custom",
+                            text = if (activeSubView == 0) {
+                                "Tap 'Catalog (318)' or Favorites to add items, or '+' for custom"
+                            } else {
+                                "Purchased items will appear here where you can restore them anytime"
+                            },
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -300,8 +446,14 @@ fun GrocerySection(
                     items(filteredGroceries, key = { it.id }) { item ->
                         GroceryItemCard(
                             item = item,
+                            isPurchasedView = activeSubView == 1,
+                            isFavorite = isFavorite(item.title),
                             onToggle = { onToggleGrocery(item) },
-                            onDelete = { onDeleteGrocery(item.id) }
+                            onRestore = { onRestoreGrocery(item) },
+                            onDelete = { onDeleteGrocery(item.id) },
+                            onToggleFavorite = {
+                                onToggleFavorite(item.title, item.category, item.store, item.source)
+                            }
                         )
                     }
                     item {
@@ -325,7 +477,7 @@ fun GrocerySection(
         }
     }
 
-    // Modal BottomSheet for 318 Item Catalog (Tabs: Past Purchases & All Items)
+    // Modal BottomSheet for 318 Item Catalog & Shared Favorites (Tabs: Past Purchases, Favorites, All Items)
     if (showCatalogSheet) {
         ModalBottomSheet(
             onDismissRequest = { showCatalogSheet = false },
@@ -334,6 +486,9 @@ fun GrocerySection(
         ) {
             CatalogBrowserSheet(
                 catalog = catalog,
+                favorites = favorites,
+                isFavorite = isFavorite,
+                onToggleFavorite = onToggleFavorite,
                 onAddCatalogItem = { item, targetStore ->
                     if (isDuplicateCheck(item.name)) {
                         pendingDuplicateItem = item
@@ -351,9 +506,51 @@ fun GrocerySection(
                         )
                     }
                 },
+                onAddFavoriteToGrocery = { fav, targetStore ->
+                    if (isDuplicateCheck(fav.name)) {
+                        pendingDuplicateItem = CatalogGroceryItem(fav.name, fav.category, fav.source)
+                    } else {
+                        onAddGrocery(
+                            fav.name,
+                            fav.category,
+                            1L,
+                            "pcs",
+                            "",
+                            "",
+                            targetStore,
+                            fav.source,
+                            fav.source == "receipt"
+                        )
+                    }
+                },
                 onClose = { showCatalogSheet = false }
             )
         }
+    }
+
+    // Clear Purchase History Confirmation Dialog
+    if (showClearHistoryConfirm) {
+        AlertDialog(
+            onDismissRequest = { showClearHistoryConfirm = false },
+            title = { Text("Clear Purchase History?") },
+            text = { Text("This will permanently remove ${completedGroceries.size} completed items from your purchase log. Your 318 catalog items and saved Favorites will NOT be affected.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onClearHistory()
+                        showClearHistoryConfirm = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Clear All")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearHistoryConfirm = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 
     // Duplicate Item Confirmation Dialog
@@ -361,8 +558,8 @@ fun GrocerySection(
         val dupItem = pendingDuplicateItem!!
         AlertDialog(
             onDismissRequest = { pendingDuplicateItem = null },
-            title = { Text("Item Already On List") },
-            text = { Text("'${dupItem.name}' is already currently on your grocery list. Would you like to add another anyway?") },
+            title = { Text("Item Already On Active List") },
+            text = { Text("'${dupItem.name}' is already currently on your active shopping list. Would you like to add another anyway?") },
             confirmButton = {
                 Button(
                     onClick = {
@@ -420,9 +617,10 @@ fun GrocerySection(
                         onAddGrocery(title, "Produce", 1L, "pcs", "", "", "Kroger", "manual", false)
                         pendingDuplicateManualTitle = null
                         showAddDialog = false
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
-                    Text("Yes, Add")
+                    Text("Add Anyway")
                 }
             },
             dismissButton = {
@@ -437,16 +635,18 @@ fun GrocerySection(
 @Composable
 fun GroceryItemCard(
     item: GroceryItem,
+    isPurchasedView: Boolean,
+    isFavorite: Boolean,
     onToggle: () -> Unit,
+    onRestore: () -> Unit,
     onDelete: () -> Unit,
-    modifier: Modifier = Modifier
+    onToggleFavorite: () -> Unit
 ) {
     val isDone = item.isCompleted
 
     NeonGlowCard(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
-            .clickable { onToggle() }
             .testTag("grocery_item_${item.id}"),
         borderColor = if (isDone) MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
         else MaterialTheme.colorScheme.primary.copy(alpha = 0.8f),
@@ -459,22 +659,43 @@ fun GroceryItemCard(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Checkbox Icon
-            IconButton(
-                onClick = onToggle,
-                modifier = Modifier.size(36.dp)
-            ) {
-                Icon(
-                    imageVector = if (isDone) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
-                    contentDescription = if (isDone) "Mark pending" else "Mark bought",
-                    tint = if (isDone) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
-                )
+            // Checkbox / Restore Icon
+            if (isPurchasedView) {
+                // Restore button for completed view
+                IconButton(
+                    onClick = onRestore,
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Restore to active list",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            } else {
+                // Active checkbox: tapping marks purchased immediately
+                IconButton(
+                    onClick = onToggle,
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = if (isDone) Icons.Default.CheckCircle else Icons.Default.RadioButtonUnchecked,
+                        contentDescription = if (isDone) "Mark pending" else "Mark bought",
+                        tint = if (isDone) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(6.dp))
 
             // Details
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable {
+                        if (isPurchasedView) onRestore() else onToggle()
+                    }
+            ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = item.title,
@@ -567,6 +788,19 @@ fun GroceryItemCard(
                 }
             }
 
+            // Favorite Heart Action
+            IconButton(
+                onClick = onToggleFavorite,
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                    tint = if (isFavorite) Color(0xFFFF007F) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
             // Delete Action
             IconButton(
                 onClick = onDelete,
@@ -586,10 +820,15 @@ fun GroceryItemCard(
 @Composable
 fun CatalogBrowserSheet(
     catalog: List<CatalogGroceryItem>,
+    favorites: List<GroceryFavorite>,
+    isFavorite: (String) -> Boolean,
+    onToggleFavorite: (name: String, category: String, preferredStore: String, source: String) -> Unit,
     onAddCatalogItem: (CatalogGroceryItem, String) -> Unit,
+    onAddFavoriteToGrocery: (GroceryFavorite, String) -> Unit,
     onClose: () -> Unit
 ) {
-    var selectedTab by remember { mutableIntStateOf(0) } // 0: Past Purchases (158), 1: All Items (318)
+    // 0: Past Purchases (158), 1: Shared Favorites, 2: All Items (318)
+    var selectedTab by remember { mutableIntStateOf(0) }
     var catalogSearch by remember { mutableStateOf("") }
     var selectedCatalogCategory by remember { mutableStateOf("All") }
     var defaultTargetStore by remember { mutableStateOf("Kroger") }
@@ -597,20 +836,10 @@ fun CatalogBrowserSheet(
 
     val pastPurchases = remember(catalog) { catalog.filter { it.source == "receipt" } }
 
-    val baseList = if (selectedTab == 0) pastPurchases else catalog
-
-    val filteredList = remember(baseList, catalogSearch, selectedCatalogCategory) {
-        baseList.filter { item ->
-            val matchCat = selectedCatalogCategory == "All" || item.category.equals(selectedCatalogCategory, ignoreCase = true)
-            val matchQuery = catalogSearch.isBlank() || item.name.contains(catalogSearch, ignoreCase = true)
-            matchCat && matchQuery
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(550.dp)
+            .height(580.dp)
             .padding(horizontal = 16.dp)
     ) {
         Row(
@@ -622,13 +851,13 @@ fun CatalogBrowserSheet(
         ) {
             Column {
                 Text(
-                    text = "Cosmic Grocery Catalog",
+                    text = "Cosmic Grocery Bank",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "One-tap quick add from 318 household items",
+                    text = "One-tap quick add from 318 items & shared household favorites",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -638,7 +867,7 @@ fun CatalogBrowserSheet(
             }
         }
 
-        // Tabs: Past Purchases (158) vs All Items (318)
+        // Tabs: Past Purchases (158) | Favorites (N) | All Items (318)
         TabRow(
             selectedTabIndex = selectedTab,
             containerColor = Color.Transparent,
@@ -653,12 +882,23 @@ fun CatalogBrowserSheet(
             Tab(
                 selected = selectedTab == 0,
                 onClick = { selectedTab = 0 },
-                text = { Text("My Past Purchases (${pastPurchases.size})") }
+                text = { Text("Past (${pastPurchases.size})", fontSize = 12.sp) }
             )
             Tab(
                 selected = selectedTab == 1,
                 onClick = { selectedTab = 1 },
-                text = { Text("All Items (${catalog.size})") }
+                text = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Favorite, contentDescription = null, tint = Color(0xFFFF007F), modifier = Modifier.size(13.dp))
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Text("Favorites (${favorites.size})", fontSize = 12.sp)
+                    }
+                }
+            )
+            Tab(
+                selected = selectedTab == 2,
+                onClick = { selectedTab = 2 },
+                text = { Text("All (${catalog.size})", fontSize = 12.sp) }
             )
         }
 
@@ -693,11 +933,11 @@ fun CatalogBrowserSheet(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Catalog Search Bar
+        // Search Bar
         OutlinedTextField(
             value = catalogSearch,
             onValueChange = { catalogSearch = it },
-            placeholder = { Text("Search catalog items...") },
+            placeholder = { Text(if (selectedTab == 1) "Search household favorites..." else "Search catalog items...") },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
             trailingIcon = {
                 if (catalogSearch.isNotBlank()) {
@@ -733,71 +973,214 @@ fun CatalogBrowserSheet(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Catalog Items List
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            items(filteredList) { item ->
-                val wasJustAdded = addedFeedbackItem == item.name
+        // Tab-Specific List Content
+        if (selectedTab == 1) {
+            // Favorites List
+            val filteredFavs = remember(favorites, catalogSearch, selectedCatalogCategory) {
+                favorites.filter { fav ->
+                    val matchCat = selectedCatalogCategory == "All" || fav.category.equals(selectedCatalogCategory, ignoreCase = true)
+                    val matchQuery = catalogSearch.isBlank() || fav.name.contains(catalogSearch, ignoreCase = true)
+                    matchCat && matchQuery
+                }
+            }
 
-                Row(
+            if (filteredFavs.isEmpty()) {
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = item.name,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(
+                            imageVector = Icons.Default.FavoriteBorder,
+                            contentDescription = null,
+                            tint = Color(0xFFFF007F).copy(alpha = 0.4f),
+                            modifier = Modifier.size(48.dp)
                         )
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = item.category,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            if (item.source == "receipt") {
-                                Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = if (favorites.isEmpty()) "No shared favorites saved yet" else "No matching favorites found",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Tap the heart icon on any catalog or shopping list item to save it here permanently",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    items(filteredFavs, key = { it.id }) { fav ->
+                        val wasJustAdded = addedFeedbackItem == fav.name
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = "• Past Receipt",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = Color(0xFFFF007F)
+                                    text = fav.name,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Medium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = fav.category,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "• ${fav.preferredStore}",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = Color(0xFF00E5FF)
+                                    )
+                                }
+                            }
+
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                IconButton(
+                                    onClick = { onToggleFavorite(fav.name, fav.category, fav.preferredStore, fav.source) },
+                                    modifier = Modifier.size(32.dp)
+                                ) {
+                                    Icon(Icons.Default.Favorite, contentDescription = "Unfavorite", tint = Color(0xFFFF007F), modifier = Modifier.size(18.dp))
+                                }
+
+                                Button(
+                                    onClick = {
+                                        onAddFavoriteToGrocery(fav, defaultTargetStore)
+                                        addedFeedbackItem = fav.name
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (wasJustAdded) Color(0xFF00FFB2) else MaterialTheme.colorScheme.primary,
+                                        contentColor = Color(0xFF04101A)
+                                    ),
+                                    shape = RoundedCornerShape(16.dp)
+                                ) {
+                                    if (wasJustAdded) {
+                                        Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(14.dp))
+                                        Spacer(modifier = Modifier.width(3.dp))
+                                        Text("Added", style = MaterialTheme.typography.labelSmall)
+                                    } else {
+                                        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp))
+                                        Spacer(modifier = Modifier.width(3.dp))
+                                        Text("Add", style = MaterialTheme.typography.labelSmall)
+                                    }
+                                }
                             }
                         }
                     }
+                }
+            }
+        } else {
+            // Past Purchases (Tab 0) or All Items (Tab 2)
+            val baseList = if (selectedTab == 0) pastPurchases else catalog
+            val filteredList = remember(baseList, catalogSearch, selectedCatalogCategory) {
+                baseList.filter { item ->
+                    val matchCat = selectedCatalogCategory == "All" || item.category.equals(selectedCatalogCategory, ignoreCase = true)
+                    val matchQuery = catalogSearch.isBlank() || item.name.contains(catalogSearch, ignoreCase = true)
+                    matchCat && matchQuery
+                }
+            }
 
-                    Button(
-                        onClick = {
-                            onAddCatalogItem(item, defaultTargetStore)
-                            addedFeedbackItem = item.name
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (wasJustAdded) Color(0xFF00FFB2) else MaterialTheme.colorScheme.primary,
-                            contentColor = Color(0xFF04101A)
-                        ),
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.testTag("catalog_add_${item.name.lowercase().take(10).replace(" ", "_")}")
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                items(filteredList) { item ->
+                    val wasJustAdded = addedFeedbackItem == item.name
+                    val isFav = isFavorite(item.name)
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (wasJustAdded) {
-                            Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Added", style = MaterialTheme.typography.labelSmall)
-                        } else {
-                            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Add", style = MaterialTheme.typography.labelSmall)
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = item.name,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = item.category,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                if (item.source == "receipt") {
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "• Past Receipt",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = Color(0xFFFF007F)
+                                    )
+                                }
+                            }
+                        }
+
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            // Favorite toggle button inside catalog
+                            IconButton(
+                                onClick = { onToggleFavorite(item.name, item.category, defaultTargetStore, item.source) },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (isFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                    contentDescription = if (isFav) "Remove from favorites" else "Add to favorites",
+                                    tint = if (isFav) Color(0xFFFF007F) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+
+                            Button(
+                                onClick = {
+                                    onAddCatalogItem(item, defaultTargetStore)
+                                    addedFeedbackItem = item.name
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (wasJustAdded) Color(0xFF00FFB2) else MaterialTheme.colorScheme.primary,
+                                    contentColor = Color(0xFF04101A)
+                                ),
+                                shape = RoundedCornerShape(16.dp),
+                                modifier = Modifier.testTag("catalog_add_${item.name.lowercase().take(10).replace(" ", "_")}")
+                            ) {
+                                if (wasJustAdded) {
+                                    Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(3.dp))
+                                    Text("Added", style = MaterialTheme.typography.labelSmall)
+                                } else {
+                                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(14.dp))
+                                    Spacer(modifier = Modifier.width(3.dp))
+                                    Text("Add", style = MaterialTheme.typography.labelSmall)
+                                }
+                            }
                         }
                     }
                 }
