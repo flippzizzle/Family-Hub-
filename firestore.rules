@@ -87,6 +87,48 @@ service cloud.firestore {
         && data.createdAt is timestamp && data.createdAt <= request.time;
     }
 
+    function isValidChore(data) {
+      return data.keys().hasAll(['hubId', 'memberUids', 'title', 'frequency', 'isCompleted', 'createdAt', 'updatedAt'])
+        && data.hubId is string && data.hubId.size() > 0
+        && data.memberUids is list
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 150
+        && data.frequency is string
+        && data.isCompleted is bool
+        && data.createdAt is timestamp && data.createdAt <= request.time
+        && data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidMealPlanDay(data) {
+      return data.keys().hasAll(['hubId', 'memberUids', 'dateString', 'dayOfWeek', 'mealName', 'updatedAt'])
+        && data.hubId is string && data.hubId.size() > 0
+        && data.memberUids is list
+        && data.dateString is string
+        && data.dayOfWeek is string
+        && data.mealName is string
+        && data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidCustomMeal(data) {
+      return data.keys().hasAll(['hubId', 'memberUids', 'name', 'costAndEffortTier', 'createdAt', 'updatedAt'])
+        && data.hubId is string && data.hubId.size() > 0
+        && data.memberUids is list
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 150
+        && data.costAndEffortTier is string
+        && data.createdAt is timestamp && data.createdAt <= request.time
+        && data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidHouseholdNote(data) {
+      return data.keys().hasAll(['hubId', 'memberUids', 'title', 'content', 'authorName', 'createdAt', 'updatedAt'])
+        && data.hubId is string && data.hubId.size() > 0
+        && data.memberUids is list
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 150
+        && data.content is string && data.content.size() <= 2000
+        && data.authorName is string
+        && data.createdAt is timestamp && data.createdAt <= request.time
+        && data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
     // Hub Collection
     match /hubs/{hubId} {
       allow read: if isSignedIn() && (
@@ -187,6 +229,86 @@ service cloud.firestore {
           (request.auth.uid in incoming().memberUids || isHubMember(hubId));
 
         allow delete: if isSignedIn() && isHubAdmin(hubId);
+      }
+
+      // Chores Subcollection
+      match /chores/{choreId} {
+        allow read: if isSignedIn() && (
+          request.auth.uid in resource.data.memberUids ||
+          isHubMember(hubId)
+        );
+
+        allow create: if isSignedIn() && isValidChore(incoming()) &&
+          incoming().hubId == hubId &&
+          (request.auth.uid in incoming().memberUids || isHubMember(hubId));
+
+        allow update: if isSignedIn() && isValidChore(incoming()) &&
+          incoming().hubId == hubId &&
+          (request.auth.uid in incoming().memberUids || isHubMember(hubId));
+
+        allow delete: if isSignedIn() && (
+          request.auth.uid in existing().memberUids ||
+          isHubMember(hubId)
+        );
+      }
+
+      // Meal Plans Subcollection
+      match /meal_plans/{dayId} {
+        allow read: if isSignedIn() && (
+          request.auth.uid in resource.data.memberUids ||
+          isHubMember(hubId)
+        );
+
+        allow create, update: if isSignedIn() && isValidMealPlanDay(incoming()) &&
+          incoming().hubId == hubId &&
+          (request.auth.uid in incoming().memberUids || isHubMember(hubId));
+
+        allow delete: if isSignedIn() && (
+          request.auth.uid in existing().memberUids ||
+          isHubMember(hubId)
+        );
+      }
+
+      // Custom Meals Subcollection
+      match /custom_meals/{mealId} {
+        allow read: if isSignedIn() && (
+          request.auth.uid in resource.data.memberUids ||
+          isHubMember(hubId)
+        );
+
+        allow create: if isSignedIn() && isValidCustomMeal(incoming()) &&
+          incoming().hubId == hubId &&
+          (request.auth.uid in incoming().memberUids || isHubMember(hubId));
+
+        allow update: if isSignedIn() && isValidCustomMeal(incoming()) &&
+          incoming().hubId == hubId &&
+          (request.auth.uid in incoming().memberUids || isHubMember(hubId));
+
+        allow delete: if isSignedIn() && (
+          request.auth.uid in existing().memberUids ||
+          isHubMember(hubId)
+        );
+      }
+
+      // Notes Subcollection
+      match /notes/{noteId} {
+        allow read: if isSignedIn() && (
+          request.auth.uid in resource.data.memberUids ||
+          isHubMember(hubId)
+        );
+
+        allow create: if isSignedIn() && isValidHouseholdNote(incoming()) &&
+          incoming().hubId == hubId &&
+          (request.auth.uid in incoming().memberUids || isHubMember(hubId));
+
+        allow update: if isSignedIn() && isValidHouseholdNote(incoming()) &&
+          incoming().hubId == hubId &&
+          (request.auth.uid in incoming().memberUids || isHubMember(hubId));
+
+        allow delete: if isSignedIn() && (
+          request.auth.uid in existing().memberUids ||
+          isHubMember(hubId)
+        );
       }
     }
   }

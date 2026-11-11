@@ -1,0 +1,377 @@
+{
+  "schemaVersion": 1,
+  "title": "Master Meals List",
+  "source": {
+    "document": "Meal_List_Sorted_by_Cost_and_Complexity_FINAL_VEGSOUP.docx",
+    "documentTitle": "Meal List Sorted by Cost and Complexity (Updated + Vegetable Soup Fix)",
+    "notes": "Exact meal names and cost/effort groupings transcribed from user’s saved master meal document. No recipes, ingredients, or prep times have been fabricated."
+  },
+  "tierDescriptions": {
+    "Cheapest & Easiest": "Minimal ingredients, pantry-based, under ~$2 per serving.",
+    "Moderate Cost & Effort": "Fresh meat or multiple components, under ~$3–5 per serving.",
+    "Higher Cost or More Complex": "Special ingredients, seafood, sauces, or multi-step prep, ~$5+ per serving."
+  },
+  "totalMeals": 72,
+  "meals": [
+    {
+      "id": "meal-pb-toast",
+      "name": "PB Toast",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-pb-j",
+      "name": "PB&J",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-pb-j-roll-up",
+      "name": "PB&J Roll-up",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-pb-j-waffles",
+      "name": "PB&J Waffles",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-canned-fruit",
+      "name": "Canned Fruit",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-cheese-roll-up",
+      "name": "Cheese Roll-up",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-chips-cheese",
+      "name": "Chips & Cheese",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-chips-salsa",
+      "name": "Chips & Salsa",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-egg-sandwich",
+      "name": "Egg Sandwich",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-fried-bologna-sandwich",
+      "name": "Fried Bologna Sandwich",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-rice-cheese-salsa",
+      "name": "Rice, Cheese & Salsa",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-teriyaki-rice-eggs",
+      "name": "Teriyaki Rice & Eggs",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-baked-potato",
+      "name": "Baked Potato",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-quesadillas",
+      "name": "Quesadillas",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-tuna-crackers",
+      "name": "Tuna & Crackers",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-tuna-sandwich",
+      "name": "Tuna Sandwich",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-tuna-tacos",
+      "name": "Tuna Tacos",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-grilled-cheese-tomato-soup",
+      "name": "Grilled Cheese & Tomato Soup",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-bean-dip",
+      "name": "Bean Dip",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-nachos",
+      "name": "Nachos",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-fried-potatoes",
+      "name": "Fried Potatoes",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-manwich",
+      "name": "Manwich",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-hamburger-helper",
+      "name": "Hamburger Helper",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-lunchmeat-sandwiches",
+      "name": "Lunchmeat Sandwiches",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-tacos",
+      "name": "Tacos",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-taco-casserole",
+      "name": "Taco Casserole",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-cornbread",
+      "name": "Cornbread",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-vegetable-soup",
+      "name": "Vegetable Soup",
+      "costAndEffortTier": "Cheapest & Easiest"
+    },
+    {
+      "id": "meal-chicken-mashed-potatoes-green-beans",
+      "name": "Chicken, Mashed Potatoes & Green Beans",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-smoked-sausage-mashed-potatoes-spinach",
+      "name": "Smoked Sausage, Mashed Potatoes & Spinach",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-chicken-alfredo",
+      "name": "Chicken Alfredo",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-popcorn-chicken-alfredo",
+      "name": "Popcorn Chicken & Alfredo",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-popcorn-shrimp-alfredo",
+      "name": "Popcorn Shrimp & Alfredo",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-chicken-noodle-soup",
+      "name": "Chicken Noodle Soup",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-chili",
+      "name": "Chili",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-chili-dogs",
+      "name": "Chili Dogs",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-shepherds-pie",
+      "name": "Shepherd’s Pie",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-potato-soup",
+      "name": "Potato Soup",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-fajitas",
+      "name": "Fajitas",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-biscuits-gravy",
+      "name": "Biscuits & Gravy",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-cheeseburgers",
+      "name": "Cheeseburgers",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-arroz-con-pollo",
+      "name": "Arroz con Pollo",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-teriyaki-chicken",
+      "name": "Teriyaki Chicken",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-teriyaki-rice-with-eggs",
+      "name": "Teriyaki Rice with Eggs",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-spaghetti",
+      "name": "Spaghetti",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-pasta-caucasiano",
+      "name": "Pasta Caucasiano",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-sopa-verde",
+      "name": "Sopa Verde",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-meatloaf",
+      "name": "Meatloaf",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-meatballs",
+      "name": "Meatballs",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-blts",
+      "name": "BLTs",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-tuna-casserole",
+      "name": "Tuna Casserole",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-tuna-turnovers",
+      "name": "Tuna Turnovers",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-french-toast",
+      "name": "French Toast",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-pancakes",
+      "name": "Pancakes",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-mac-cheese",
+      "name": "Mac & Cheese",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-pizza-rolls",
+      "name": "Pizza Rolls",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-mini-corn-dogs",
+      "name": "Mini Corn Dogs",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-hot-pockets",
+      "name": "Hot Pockets",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-poppers",
+      "name": "Poppers",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-salmon-patties",
+      "name": "Salmon Patties",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-barbecue-chicken",
+      "name": "Barbecue Chicken",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-chicken-tikka-masala",
+      "name": "Chicken Tikka Masala",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-tikka-masala-pasta",
+      "name": "Tikka Masala Pasta",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-empanadas",
+      "name": "Empanadas",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-zuppa-toscana",
+      "name": "Zuppa Toscana",
+      "costAndEffortTier": "Moderate Cost & Effort"
+    },
+    {
+      "id": "meal-tikka-masala",
+      "name": "Tikka Masala",
+      "costAndEffortTier": "Higher Cost or More Complex"
+    },
+    {
+      "id": "meal-bang-bang-shrimp",
+      "name": "Bang Bang Shrimp",
+      "costAndEffortTier": "Higher Cost or More Complex"
+    },
+    {
+      "id": "meal-lasagna",
+      "name": "Lasagna",
+      "costAndEffortTier": "Higher Cost or More Complex"
+    },
+    {
+      "id": "meal-shish-kabobs",
+      "name": "Shish Kabobs",
+      "costAndEffortTier": "Higher Cost or More Complex"
+    },
+    {
+      "id": "meal-steak-tacos",
+      "name": "Steak Tacos",
+      "costAndEffortTier": "Higher Cost or More Complex"
+    },
+    {
+      "id": "meal-steak-baked-potatoes",
+      "name": "Steak & Baked Potatoes",
+      "costAndEffortTier": "Higher Cost or More Complex"
+    },
+    {
+      "id": "meal-pot-roast",
+      "name": "Pot Roast",
+      "costAndEffortTier": "Higher Cost or More Complex"
+    }
+  ]
+}

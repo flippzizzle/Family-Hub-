@@ -1,0 +1,1595 @@
+{
+  "description": "Family Hub grocery picker source: 318 named items, including 158 from historical Kroger receipts. These are item labels, not current prices or stock.",
+  "items": [
+    {
+      "name": "Bananas",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Strawberries",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Blackberries",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Blueberries",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Raspberries",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Pomegranates",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Mandarin oranges",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Avocados",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Romaine lettuce",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Celery",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Garlic",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "White onions",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Red onions",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Green onions",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Cilantro",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Bell peppers",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Poblano peppers",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Zucchini",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Limes",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Russet potatoes",
+      "category": "Produce",
+      "source": "receipt"
+    },
+    {
+      "name": "Kroger 2% milk (gallon)",
+      "category": "Dairy & Eggs",
+      "source": "receipt"
+    },
+    {
+      "name": "Half & half",
+      "category": "Dairy & Eggs",
+      "source": "receipt"
+    },
+    {
+      "name": "Large eggs (dozen)",
+      "category": "Dairy & Eggs",
+      "source": "receipt"
+    },
+    {
+      "name": "Unsalted butter",
+      "category": "Dairy & Eggs",
+      "source": "receipt"
+    },
+    {
+      "name": "Parmesan cheese",
+      "category": "Dairy & Eggs",
+      "source": "receipt"
+    },
+    {
+      "name": "Mozzarella shredded cheese",
+      "category": "Dairy & Eggs",
+      "source": "receipt"
+    },
+    {
+      "name": "Mexican blend shredded cheese",
+      "category": "Dairy & Eggs",
+      "source": "receipt"
+    },
+    {
+      "name": "Sliced cheese",
+      "category": "Dairy & Eggs",
+      "source": "receipt"
+    },
+    {
+      "name": "Sour cream",
+      "category": "Dairy & Eggs",
+      "source": "receipt"
+    },
+    {
+      "name": "Cottage cheese",
+      "category": "Dairy & Eggs",
+      "source": "receipt"
+    },
+    {
+      "name": "Sweetened condensed milk",
+      "category": "Dairy & Eggs",
+      "source": "receipt"
+    },
+    {
+      "name": "Frozen boneless chicken tenderloins",
+      "category": "Meat & Protein",
+      "source": "receipt"
+    },
+    {
+      "name": "Frozen chicken nuggets",
+      "category": "Meat & Protein",
+      "source": "receipt"
+    },
+    {
+      "name": "Crispy chicken breast patties",
+      "category": "Meat & Protein",
+      "source": "receipt"
+    },
+    {
+      "name": "Ground beef",
+      "category": "Meat & Protein",
+      "source": "receipt"
+    },
+    {
+      "name": "Shaved steak",
+      "category": "Meat & Protein",
+      "source": "receipt"
+    },
+    {
+      "name": "Beef smoked sausage",
+      "category": "Meat & Protein",
+      "source": "receipt"
+    },
+    {
+      "name": "Bacon",
+      "category": "Meat & Protein",
+      "source": "receipt"
+    },
+    {
+      "name": "Sausage patties",
+      "category": "Meat & Protein",
+      "source": "receipt"
+    },
+    {
+      "name": "Canned tuna",
+      "category": "Meat & Protein",
+      "source": "receipt"
+    },
+    {
+      "name": "Popcorn shrimp",
+      "category": "Meat & Protein",
+      "source": "receipt"
+    },
+    {
+      "name": "Hash brown patties",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Potato skins (cheddar & bacon)",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Pepperoni Hot Pockets",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Frozen pepperoni pizza",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Frozen pizza rolls",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Mini corn dogs",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Corn dogs",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Breaded jalapeño poppers",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Frozen mashed potatoes",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Frozen mixed berries",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Chicken nuggets (bulk)",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Mint chocolate chip ice cream",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Moose Tracks ice cream",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Neapolitan ice cream",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Rainbow sherbet",
+      "category": "Frozen & Quick Meals",
+      "source": "receipt"
+    },
+    {
+      "name": "Buttermilk bread",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Hamburger buns",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Flour tortillas",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Spaghetti",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Elbow macaroni",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Deluxe shells & cheese",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Alfredo sauce (roasted garlic)",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Ragu pasta sauce",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Tikka masala sauce",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Salsa casera (mild)",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Salsa verde (mild)",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Salsa con queso",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Black beans",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Pinto beans",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Kidney beans",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Great northern beans",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Canned green beans",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Canned diced tomatoes",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Canned tomato soup",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Canned peaches",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Canned pears",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Mandarin oranges (canned)",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Creamy peanut butter",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Strawberry jam",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Raspberry jam",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Honey",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "White rice",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Beef ramen cups",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Chili ramen",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Taco seasoning",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Brown gravy mix",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Manwich sloppy joe sauce",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Ketchup",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "BBQ sauce",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Sriracha",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Tortilla chips",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Saltine crackers",
+      "category": "Pantry & Canned",
+      "source": "receipt"
+    },
+    {
+      "name": "Bottled water (40 pack)",
+      "category": "Beverages",
+      "source": "receipt"
+    },
+    {
+      "name": "Spring water (gallon)",
+      "category": "Beverages",
+      "source": "receipt"
+    },
+    {
+      "name": "Cranberry juice",
+      "category": "Beverages",
+      "source": "receipt"
+    },
+    {
+      "name": "Cranberry raspberry juice",
+      "category": "Beverages",
+      "source": "receipt"
+    },
+    {
+      "name": "Java Monster Mean Bean",
+      "category": "Beverages",
+      "source": "receipt"
+    },
+    {
+      "name": "Folgers Black Silk coffee",
+      "category": "Beverages",
+      "source": "receipt"
+    },
+    {
+      "name": "Coffee K-Cups",
+      "category": "Beverages",
+      "source": "receipt"
+    },
+    {
+      "name": "Espresso roast coffee pods",
+      "category": "Beverages",
+      "source": "receipt"
+    },
+    {
+      "name": "Green tea",
+      "category": "Beverages",
+      "source": "receipt"
+    },
+    {
+      "name": "Lemon ginger tea",
+      "category": "Beverages",
+      "source": "receipt"
+    },
+    {
+      "name": "Ginger ale",
+      "category": "Beverages",
+      "source": "receipt"
+    },
+    {
+      "name": "Lemon-lime soda",
+      "category": "Beverages",
+      "source": "receipt"
+    },
+    {
+      "name": "BODYARMOR sports drink",
+      "category": "Beverages",
+      "source": "receipt"
+    },
+    {
+      "name": "Cinnamon Toast Crunch",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Honey Nut Cheerios",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Reese’s Puffs",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Cocoa Pebbles",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Frosted Flakes",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Honey Bunches of Oats",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Donuts",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Ritz crackers",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Oreos",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Chips Ahoy cookies",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Potato chips",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Rice crisps",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Snack mix",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Sweet BBQ almonds",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Chocolate candies",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "M&M’s Minis",
+      "category": "Breakfast & Snacks",
+      "source": "receipt"
+    },
+    {
+      "name": "Granulated sugar",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Brown sugar",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Chocolate chips",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Brownie mix",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Chocolate frosting",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Jiffy cornbread mix",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Muffin mix",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Vegetable oil",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Distilled white vinegar",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Garlic powder",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Onion powder",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Crushed red pepper",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Ground turmeric",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Ground cinnamon",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Ground cloves",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Vanilla sweetener",
+      "category": "Baking & Seasonings",
+      "source": "receipt"
+    },
+    {
+      "name": "Angel Soft toilet paper",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Dishwasher pods",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Dawn dish soap",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Laundry detergent",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Febreze air freshener",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Lysol toilet bowl cleaner",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Antibacterial all-purpose cleaner",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Plastic forks",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Plastic spoons",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Dry shampoo",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Body wash",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Shampoo",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Conditioner",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Deodorant",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Mouthwash",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Lip balm",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Pepto-Bismol",
+      "category": "Household & Personal",
+      "source": "receipt"
+    },
+    {
+      "name": "Purina Kitten Chow",
+      "category": "Pet Supplies",
+      "source": "receipt"
+    },
+    {
+      "name": "Wet cat food (chicken & salmon)",
+      "category": "Pet Supplies",
+      "source": "receipt"
+    },
+    {
+      "name": "Clumping cat litter",
+      "category": "Pet Supplies",
+      "source": "receipt"
+    },
+    {
+      "name": "Apples",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Grapes",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Oranges",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Lemons",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Lettuce",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Spinach",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Cucumbers",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Tomatoes",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Carrots",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Broccoli",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Cauliflower",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Cabbage",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Corn on the cob",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Sweet potatoes",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Mushrooms",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Peaches",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Pineapple",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Watermelon",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Frozen vegetables",
+      "category": "Produce",
+      "source": "general"
+    },
+    {
+      "name": "Whole milk",
+      "category": "Dairy & Eggs",
+      "source": "general"
+    },
+    {
+      "name": "Almond milk",
+      "category": "Dairy & Eggs",
+      "source": "general"
+    },
+    {
+      "name": "Oat milk",
+      "category": "Dairy & Eggs",
+      "source": "general"
+    },
+    {
+      "name": "Cream cheese",
+      "category": "Dairy & Eggs",
+      "source": "general"
+    },
+    {
+      "name": "Cheddar cheese",
+      "category": "Dairy & Eggs",
+      "source": "general"
+    },
+    {
+      "name": "Swiss cheese",
+      "category": "Dairy & Eggs",
+      "source": "general"
+    },
+    {
+      "name": "Greek yogurt",
+      "category": "Dairy & Eggs",
+      "source": "general"
+    },
+    {
+      "name": "Yogurt cups",
+      "category": "Dairy & Eggs",
+      "source": "general"
+    },
+    {
+      "name": "Heavy whipping cream",
+      "category": "Dairy & Eggs",
+      "source": "general"
+    },
+    {
+      "name": "String cheese",
+      "category": "Dairy & Eggs",
+      "source": "general"
+    },
+    {
+      "name": "Cottage cheese (small tub)",
+      "category": "Dairy & Eggs",
+      "source": "general"
+    },
+    {
+      "name": "Egg whites",
+      "category": "Dairy & Eggs",
+      "source": "general"
+    },
+    {
+      "name": "Ground turkey",
+      "category": "Meat & Protein",
+      "source": "general"
+    },
+    {
+      "name": "Boneless chicken breast",
+      "category": "Meat & Protein",
+      "source": "general"
+    },
+    {
+      "name": "Turkey bacon",
+      "category": "Meat & Protein",
+      "source": "general"
+    },
+    {
+      "name": "Deli turkey",
+      "category": "Meat & Protein",
+      "source": "general"
+    },
+    {
+      "name": "Deli ham",
+      "category": "Meat & Protein",
+      "source": "general"
+    },
+    {
+      "name": "Salmon fillets",
+      "category": "Meat & Protein",
+      "source": "general"
+    },
+    {
+      "name": "Shrimp",
+      "category": "Meat & Protein",
+      "source": "general"
+    },
+    {
+      "name": "Frozen fish fillets",
+      "category": "Meat & Protein",
+      "source": "general"
+    },
+    {
+      "name": "Tofu",
+      "category": "Meat & Protein",
+      "source": "general"
+    },
+    {
+      "name": "Hot dogs",
+      "category": "Meat & Protein",
+      "source": "general"
+    },
+    {
+      "name": "Hamburger patties",
+      "category": "Meat & Protein",
+      "source": "general"
+    },
+    {
+      "name": "French fries",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Tater tots",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Frozen broccoli",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Frozen peas",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Frozen corn",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Frozen green beans",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Frozen strawberries",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Frozen blueberries",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Frozen waffles",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Frozen pancakes",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Frozen burritos",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Frozen ravioli",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Chicken tenders",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Fish sticks",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Frozen garlic bread",
+      "category": "Frozen & Quick Meals",
+      "source": "general"
+    },
+    {
+      "name": "Peanut butter",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Jelly",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Jasmine rice",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Brown rice",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Oats",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "All-purpose flour",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Pancake mix",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Pancake syrup",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Tuna packets",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Canned chicken",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Canned corn",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Canned carrots",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Canned peas",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Canned mushrooms",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Chickpeas",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Lentils",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Canned pineapple",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Canned fruit cocktail",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Chicken broth",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Beef broth",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Vegetable broth",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Tomato paste",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Marinara sauce",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Mac and cheese",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Ramen noodles",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Instant potatoes",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Taco shells",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Breadcrumbs",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Mayonnaise",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Mustard",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Ranch dressing",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Italian dressing",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Soy sauce",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Teriyaki sauce",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Olive oil",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Canola oil",
+      "category": "Pantry & Canned",
+      "source": "general"
+    },
+    {
+      "name": "Orange juice",
+      "category": "Beverages",
+      "source": "general"
+    },
+    {
+      "name": "Apple juice",
+      "category": "Beverages",
+      "source": "general"
+    },
+    {
+      "name": "Lemonade",
+      "category": "Beverages",
+      "source": "general"
+    },
+    {
+      "name": "Iced tea",
+      "category": "Beverages",
+      "source": "general"
+    },
+    {
+      "name": "Coffee creamer",
+      "category": "Beverages",
+      "source": "general"
+    },
+    {
+      "name": "Hot cocoa",
+      "category": "Beverages",
+      "source": "general"
+    },
+    {
+      "name": "Bottled sparkling water",
+      "category": "Beverages",
+      "source": "general"
+    },
+    {
+      "name": "Dr Pepper",
+      "category": "Beverages",
+      "source": "general"
+    },
+    {
+      "name": "Coca-Cola",
+      "category": "Beverages",
+      "source": "general"
+    },
+    {
+      "name": "Pepsi",
+      "category": "Beverages",
+      "source": "general"
+    },
+    {
+      "name": "Electrolyte drinks",
+      "category": "Beverages",
+      "source": "general"
+    },
+    {
+      "name": "Bagels",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "English muffins",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "Toast bread",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "Granola bars",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "Cereal bars",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "Popcorn",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "Pretzels",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "Crackers",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "Applesauce pouches",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "Fruit snacks",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "Trail mix",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "Peanuts",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "Cashews",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "Chocolate cookies",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "Peanut butter crackers",
+      "category": "Breakfast & Snacks",
+      "source": "general"
+    },
+    {
+      "name": "Salt",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Black pepper",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Baking soda",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Baking powder",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Vanilla extract",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Cocoa powder",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Powdered sugar",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Cornstarch",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Cumin",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Paprika",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Oregano",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Italian seasoning",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Chili powder",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Cinnamon",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Nutmeg",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Yeast",
+      "category": "Baking & Seasonings",
+      "source": "general"
+    },
+    {
+      "name": "Paper towels",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Trash bags",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Sandwich bags",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Freezer bags",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Aluminum foil",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Plastic wrap",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Parchment paper",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Laundry pods",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Fabric softener",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Dish sponges",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Hand soap",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Toothpaste",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Toothbrushes",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Dental floss",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Shower cleaner",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "All-purpose cleaner",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Batteries",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Tissues",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Bandages",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Cotton swabs",
+      "category": "Household & Personal",
+      "source": "general"
+    },
+    {
+      "name": "Dry cat food",
+      "category": "Pet Supplies",
+      "source": "general"
+    },
+    {
+      "name": "Cat treats",
+      "category": "Pet Supplies",
+      "source": "general"
+    },
+    {
+      "name": "Cat litter",
+      "category": "Pet Supplies",
+      "source": "general"
+    },
+    {
+      "name": "Litter bags",
+      "category": "Pet Supplies",
+      "source": "general"
+    },
+    {
+      "name": "Cat toys",
+      "category": "Pet Supplies",
+      "source": "general"
+    }
+  ]
+}

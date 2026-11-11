@@ -29,6 +29,9 @@ data class GroceryItem(
     val category: String = "Produce", // Produce, Bakery, Dairy, Pantry, Frozen, Snacks, Beverages, Household, Other
     val quantity: Long = 1L,
     val unit: String = "pcs",
+    val store: String = "Kroger", // Kroger, Amazon, Other
+    val source: String = "manual", // receipt, catalog, manual
+    val isHistorical: Boolean = false,
     val isCompleted: Boolean = false,
     val addedBy: String = "",
     val addedByUid: String = "",
@@ -81,8 +84,106 @@ data class ActivityLog(
     val memberUids: List<String> = emptyList(),
     val userName: String = "",
     val userEmail: String = "",
-    val actionType: String = "grocery_added", // grocery_added, grocery_completed, appointment_added, member_joined, theme_changed
+    val actionType: String = "grocery_added", // grocery_added, grocery_completed, chore_completed, appointment_added, etc.
     val itemTitle: String = "",
     val description: String = "",
     @ServerTimestamp val createdAt: Timestamp? = null
+)
+
+@IgnoreExtraProperties
+data class Chore(
+    @DocumentId val id: String = "",
+    val hubId: String = "",
+    val memberUids: List<String> = emptyList(),
+    val title: String = "",
+    val description: String = "",
+    val assignedToUid: String = "",
+    val assignedToName: String = "Anyone",
+    val frequency: String = "daily", // once, daily, weekly
+    val dueDate: Timestamp? = null,
+    val isCompleted: Boolean = false,
+    val completedAt: Timestamp? = null,
+    val completedByUid: String = "",
+    val completedByName: String = "",
+    val points: Long = 10L,
+    @ServerTimestamp val createdAt: Timestamp? = null,
+    @ServerTimestamp val updatedAt: Timestamp? = null
+)
+
+@IgnoreExtraProperties
+data class MealPlanDay(
+    @DocumentId val id: String = "", // e.g. "2026-11-16"
+    val hubId: String = "",
+    val memberUids: List<String> = emptyList(),
+    val dateString: String = "", // "yyyy-MM-dd"
+    val dayOfWeek: String = "", // "Monday", "Tuesday", etc.
+    val mealId: String = "",
+    val mealName: String = "",
+    val tier: String = "Cheapest & Easiest", // Cheapest & Easiest, Moderate Cost & Effort, Higher Cost or More Complex
+    val notes: String = "",
+    val assignedCook: String = "",
+    val isFavorite: Boolean = false,
+    @ServerTimestamp val updatedAt: Timestamp? = null
+)
+
+@IgnoreExtraProperties
+data class MasterMealItem(
+    @DocumentId val id: String = "",
+    val hubId: String = "",
+    val memberUids: List<String> = emptyList(),
+    val name: String = "",
+    val costAndEffortTier: String = "Cheapest & Easiest",
+    val isCustom: Boolean = false,
+    val isFavorite: Boolean = false,
+    val notes: String = "",
+    @ServerTimestamp val createdAt: Timestamp? = null,
+    @ServerTimestamp val updatedAt: Timestamp? = null
+)
+
+@IgnoreExtraProperties
+data class HouseholdNote(
+    @DocumentId val id: String = "",
+    val hubId: String = "",
+    val memberUids: List<String> = emptyList(),
+    val title: String = "",
+    val content: String = "",
+    val authorUid: String = "",
+    val authorName: String = "",
+    val authorEmail: String = "",
+    val category: String = "General", // General, Important, Reminder, Fun, Urgent
+    val isPinned: Boolean = false,
+    val colorTag: String = "#00F5FF",
+    @ServerTimestamp val createdAt: Timestamp? = null,
+    @ServerTimestamp val updatedAt: Timestamp? = null
+)
+
+data class CatalogGroceryItem(
+    val name: String,
+    val category: String,
+    val source: String // receipt or general
+)
+
+data class TabletDisplayConfig(
+    val showClock: Boolean = true,
+    val showDinner: Boolean = true,
+    val showCalendar: Boolean = true,
+    val showChores: Boolean = true,
+    val showGroceries: Boolean = true,
+    val showNotes: Boolean = true,
+    val cardOrder: List<String> = listOf("dinner", "calendar", "chores", "groceries", "notes")
+)
+
+data class CustomThemeConfig(
+    val isCustomEnabled: Boolean = false,
+    val activePaletteName: String = "Neon Galaxy",
+    val primaryColorHex: String = "#00F5FF",
+    val secondaryColorHex: String = "#FF007F",
+    val tertiaryColorHex: String = "#B026FF",
+    val backgroundColorHex: String = "#0B001A",
+    val surfaceColorHex: String = "#120826",
+    val textScale: Float = 1.0f,
+    val cornerRadiusDp: Int = 16,
+    val glowLevel: String = "High",
+    val showStars: Boolean = true,
+    val isDeviceOnly: Boolean = false
 )

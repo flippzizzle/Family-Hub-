@@ -2,6 +2,7 @@ package com.example.ui.admin
 
 import android.content.Context
 import android.content.Intent
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -76,12 +77,17 @@ fun AdminSection(
     onRemoveWhitelistedEmail: (String) -> Unit,
     onSetMemberRole: (String, String) -> Unit,
     onRemoveMember: (String) -> Unit,
+    onExportBackup: suspend () -> String = { "" },
+    onImportBackup: suspend (String) -> Map<String, Int> = { emptyMap() },
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val coroutineScope = androidx.compose.runtime.rememberCoroutineScope()
     var showInviteDialog by remember { mutableStateOf(false) }
+    var showImportBackupDialog by remember { mutableStateOf(false) }
     var memberToRemove by remember { mutableStateOf<Member?>(null) }
     var whitelistFilter by remember { mutableStateOf("") }
+    var isExporting by remember { mutableStateOf(false) }
 
     val isPrimaryUser = hub.ownerId == currentUserId
     val isCoAdmin = hub.adminUids.contains(currentUserId)
@@ -338,9 +344,130 @@ fun AdminSection(
             }
         }
 
+        // Section: Household JSON Backup & Restore
+        item {
+            Spacer(modifier = Modifier.height(6.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.Security,
+                    contentDescription = null,
+                    tint = Color(0xFF00F5FF),
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Household Data Backup & Safe Restore",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+
+        item {
+            NeonGlowCard(
+                borderColor = Color(0xFF00F5FF).copy(alpha = 0.6f),
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Cloud Backup & HTML Hub Migration",
+                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                        color = Color(0xFF00F5FF)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Export all household data (groceries, calendar appointments, chores, meal plans, notes) to JSON, or merge import from older HTML Family Hub exports without overwriting existing cloud records.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                coroutineScope.launch {
+                                    isExporting = true
+                                    try {
+                                        val jsonString = onExportBackup()
+                                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                                        clipboard.setPrimaryClip(android.content.ClipData.newPlainText("Cosmic Hub Backup", jsonString))
+
+                                        // Share Intent
+                                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                            type = "application/json"
+                                            putExtra(Intent.EXTRA_SUBJECT, "Cosmic Family Hub Backup (${hub.name})")
+                                            putExtra(Intent.EXTRA_TEXT, jsonString)
+                                        }
+                                        context.startActivity(Intent.createChooser(shareIntent, "Export Household Backup JSON"))
+                                        android.widget.Toast.makeText(context, "Backup copied to clipboard and share dialog opened!", android.widget.Toast.LENGTH_LONG).show()
+                                    } catch (e: Exception) {
+                                        android.widget.Toast.makeText(context, "Export error: ${e.localizedMessage}", android.widget.Toast.LENGTH_LONG).show()
+                                    } finally {
+                                        isExporting = false
+                                    }
+                                }
+                            },
+                            enabled = !isExporting,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF00F5FF),
+                                contentColor = Color(0xFF04101A)
+                            ),
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier.weight(1f).testTag("export_backup_button")
+                        ) {
+                            Text(if (isExporting) "Exporting..." else "Export JSON")
+                        }
+
+                        OutlinedButton(
+                            onClick = { showImportBackupDialog = true },
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = Color(0xFFFF007F)
+                            ),
+                            modifier = Modifier.weight(1f).testTag("import_backup_button")
+                        ) {
+                            Text("Safe Restore")
+                        }
+                    }
+                }
+            }
+        }
+
         item {
             Spacer(modifier = Modifier.height(80.dp))
         }
+    }
+
+    // Import Backup Dialog
+    if (showImportBackupDialog) {
+        ImportBackupJsonDialog(
+            onDismiss = { showImportBackupDialog = false },
+            onImport = { jsonText ->
+                coroutineScope.launch {
+                    try {
+                        val stats = onImportBackup(jsonText)
+                        val total = stats.values.sum()
+                        val summary = stats.entries.joinToString(", ") { "${it.key}: ${it.value}" }
+                        android.widget.Toast.makeText(
+                            context,
+                            "Safe merge complete! Imported $total items ($summary)",
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                        showImportBackupDialog = false
+                    } catch (e: Exception) {
+                        android.widget.Toast.makeText(
+                            context,
+                            "Import failed: ${e.localizedMessage}",
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        )
     }
 
     // Invite Member Dialog
@@ -714,5 +841,64 @@ fun InviteMemberDialog(
             }
         },
         containerColor = MaterialTheme.colorScheme.surfaceVariant
+    )
+}
+
+@Composable
+fun ImportBackupJsonDialog(
+    onDismiss: () -> Unit,
+    onImport: (jsonText: String) -> Unit
+) {
+    var jsonText by remember { mutableStateOf("") }
+    var errorText by remember { mutableStateOf<String?>(null) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text("Safe Merge Restore from JSON", style = MaterialTheme.typography.titleLarge)
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = "Paste JSON exported from Cosmic Hub or your older HTML Family Hub. Records will be safely merged into Firestore without deleting or duplicating existing items.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                OutlinedTextField(
+                    value = jsonText,
+                    onValueChange = {
+                        jsonText = it
+                        errorText = null
+                    },
+                    placeholder = { Text("Paste JSON here...") },
+                    minLines = 5,
+                    maxLines = 8,
+                    modifier = Modifier.fillMaxWidth().testTag("backup_json_input")
+                )
+
+                if (errorText != null) {
+                    Text(errorText!!, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.labelSmall)
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (jsonText.isNotBlank()) {
+                        onImport(jsonText.trim())
+                    }
+                },
+                enabled = jsonText.isNotBlank(),
+                modifier = Modifier.testTag("confirm_import_backup_button")
+            ) {
+                Text("Restore & Merge")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
     )
 }

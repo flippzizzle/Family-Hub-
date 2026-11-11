@@ -94,6 +94,9 @@ val NeonColorTags = listOf(
 @Composable
 fun AppointmentSection(
     appointments: List<Appointment>,
+    syncStatus: String = "Tap to sync with Google Calendar",
+    isSyncing: Boolean = false,
+    onSyncGoogleCalendar: () -> Unit = {},
     onAddAppointment: (title: String, desc: String, loc: String, start: Timestamp, end: Timestamp, cat: String, colorTag: String, reminderMinutes: Long) -> Unit,
     onDeleteAppointment: (String) -> Unit,
     onMarkSynced: (String, String) -> Unit,
@@ -101,6 +104,15 @@ fun AppointmentSection(
 ) {
     val context = LocalContext.current
     var showAddDialog by remember { mutableStateOf(false) }
+
+    val calendarPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.values.all { it }
+        if (allGranted) {
+            onSyncGoogleCalendar()
+        }
+    }
 
     // Calendar state: month & year offset
     val todayCal = remember { Calendar.getInstance() }
@@ -163,7 +175,42 @@ fun AppointmentSection(
                     }
                 }
 
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                    // Two-Way Sync Action Button
+                    Button(
+                        onClick = {
+                            calendarPermissionLauncher.launch(
+                                arrayOf(
+                                    android.Manifest.permission.READ_CALENDAR,
+                                    android.Manifest.permission.WRITE_CALENDAR
+                                )
+                            )
+                        },
+                        enabled = !isSyncing,
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier.testTag("sync_google_calendar_button")
+                    ) {
+                        if (isSyncing) {
+                            androidx.compose.material3.CircularProgressIndicator(
+                                modifier = Modifier.size(14.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.Sync,
+                                contentDescription = null,
+                                modifier = Modifier.size(15.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(if (isSyncing) "Syncing..." else "2-Way Sync", style = MaterialTheme.typography.labelSmall)
+                    }
+
                     OutlinedButton(
                         onClick = { GoogleCalendarUtil.openGoogleCalendar(context) },
                         shape = RoundedCornerShape(10.dp),
@@ -178,10 +225,38 @@ fun AppointmentSection(
                             modifier = Modifier.size(15.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Google Cal", style = MaterialTheme.typography.labelSmall)
+                        Text("Open App", style = MaterialTheme.typography.labelSmall)
                     }
                 }
             }
+
+            // Sync Status Live Banner
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xFF003847).copy(alpha = 0.5f))
+                    .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                    .padding(horizontal = 10.dp, vertical = 6.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Sync,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = syncStatus,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Interactive Calendar Grid (when expanded)
             if (isCalendarViewExpanded) {
